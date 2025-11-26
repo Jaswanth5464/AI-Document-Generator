@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import SectionEditor from '../components/SectionEditor';
+import API_URL from '../config'; // ✅ NEW: Import API_URL
 
 function ConfigurePPT() {
   const { projectId } = useParams();
@@ -17,6 +18,7 @@ function ConfigurePPT() {
   ]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [suggesting, setSuggesting] = useState(false); // ✅ NEW: AI suggestion state
 
   useEffect(() => {
     loadProject();
@@ -48,7 +50,36 @@ function ConfigurePPT() {
     }
   };
 
-  // ✅ UPDATED FUNCTION - Navigate to generation page
+  // ✅ NEW: AI Template Suggestion Function
+  const handleAISuggest = async () => {
+    if (!topic.trim()) {
+      alert('⚠️ Please enter a presentation topic first!');
+      return;
+    }
+
+    setSuggesting(true);
+    try {
+      const response = await fetch(
+        `${API_URL}/api/generate-template?topic=${encodeURIComponent(topic)}&doc_type=pptx&num_sections=5`,
+        { method: 'POST' }
+      );
+
+      if (!response.ok) throw new Error('Failed to generate template');
+
+      const data = await response.json();
+      
+      // Replace current sections with AI suggestions
+      setSections(data.sections);
+      alert('✅ AI has suggested slide titles! You can edit them if needed.');
+      
+    } catch (error) {
+      console.error('Error generating template:', error);
+      alert('❌ Failed to generate suggestions. Please try again.');
+    } finally {
+      setSuggesting(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!topic.trim()) {
       alert('⚠️ Please enter a presentation topic!');
@@ -78,7 +109,6 @@ function ConfigurePPT() {
         lastModified: new Date()
       });
 
-      // ✅ Navigate to generation page
       navigate(`/generate/${projectId}`);
     } catch (error) {
       console.error('Error saving:', error);
@@ -122,6 +152,21 @@ function ConfigurePPT() {
             />
             <p className="password-hint">
               This will be the main topic for your presentation
+            </p>
+          </div>
+
+          {/* ✅ NEW: AI Suggestion Button */}
+          <div className="form-group">
+            <button 
+              className="btn-ai-suggest" 
+              onClick={handleAISuggest}
+              disabled={!topic.trim() || suggesting}
+              type="button"
+            >
+              {suggesting ? '🤖 AI is thinking...' : '✨ AI Suggest Slides'}
+            </button>
+            <p className="password-hint">
+              Let AI suggest slide titles based on your topic
             </p>
           </div>
 
