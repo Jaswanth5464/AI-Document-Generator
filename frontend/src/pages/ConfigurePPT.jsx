@@ -81,42 +81,43 @@ function ConfigurePPT() {
   };
 
   const handleGenerate = async () => {
-    if (!topic.trim()) {
-      alert('⚠️ Please enter a presentation topic!');
-      return;
-    }
+  if (!topic.trim()) {
+    alert('⚠️ Please enter a presentation topic!');
+    return;
+  }
 
-    const emptySlides = sections.filter(s => !s.title.trim());
-    if (emptySlides.length > 0) {
-      alert('⚠️ Please fill in all slide titles!');
-      return;
-    }
+  const emptySlides = sections.filter(s => !s.title.trim());
+  if (emptySlides.length > 0) {
+    alert('⚠️ Please fill in all slide titles!');
+    return;
+  }
 
-    if (sections.length === 0) {
-      alert('⚠️ Please add at least one slide!');
-      return;
-    }
+  if (sections.length === 0) {
+    alert('⚠️ Please add at least one slide!');
+    return;
+  }
 
-    setSaving(true);
-    try {
-      const userId = auth.currentUser.uid;
-      const projectRef = doc(db, 'users', userId, 'projects', projectId);
-      
-      await updateDoc(projectRef, {
-        topic,
-        sections,
-        status: 'configured',
-        lastModified: new Date()
-      });
+  setSaving(true);
+  try {
+    const userId = auth.currentUser.uid;
+    const projectRef = doc(db, 'users', userId, 'projects', projectId);
+    
+    await updateDoc(projectRef, {
+      topic,
+      sections,
+      theme: selectedTheme, // ADD THIS LINE
+      status: 'configured',
+      lastModified: new Date()
+    });
 
-      navigate(`/generate/${projectId}`);
-    } catch (error) {
-      console.error('Error saving:', error);
-      alert('❌ Failed to save configuration. Please try again.');
-    } finally {
-      setSaving(false);
-    }
-  };
+    navigate(`/generate/${projectId}`);
+  } catch (error) {
+    console.error('Error saving:', error);
+    alert('❌ Failed to save configuration. Please try again.');
+  } finally {
+    setSaving(false);
+  }
+};
 
   if (loading) {
     return (
@@ -134,7 +135,7 @@ function ConfigurePPT() {
     );
   }
 
-  return (
+ return (
     <div className="configure-container">
       <div className="configure-content">
         <div className="configure-card">
@@ -155,10 +156,10 @@ function ConfigurePPT() {
             </p>
           </div>
 
-          {/* ✅ NEW: AI Suggestion Button */}
+          {/* ✅ AI Suggestion Button */}
           <div className="form-group">
-            <button 
-              className="btn-ai-suggest" 
+            <button
+              className="btn-ai-suggest"
               onClick={handleAISuggest}
               disabled={!topic.trim() || suggesting}
               type="button"
@@ -170,6 +171,35 @@ function ConfigurePPT() {
             </p>
           </div>
 
+          {/* 🎨 =============== THEME SELECTOR =============== */}
+          <div className="form-group">
+            <label>🎨 Presentation Theme</label>
+            <select
+              value={selectedTheme}
+              onChange={(e) => setSelectedTheme(e.target.value)}
+              className="theme-selector"
+            >
+              <option value="professional_blue">💙 Professional Blue</option>
+              <option value="modern_dark">🖤 Modern Dark</option>
+              <option value="vibrant_orange">🧡 Vibrant Orange</option>
+              <option value="nature_green">💚 Nature Green</option>
+              <option value="elegant_purple">💜 Elegant Purple</option>
+            </select>
+
+            <p className="password-hint">
+              Choose a color theme for your presentation
+            </p>
+
+            <div className={`theme-preview theme-${selectedTheme}`}>
+              <div className="preview-title">Preview</div>
+              <div className="preview-content">
+                <div className="preview-bullet">• First point</div>
+                <div className="preview-bullet">• Second point</div>
+              </div>
+            </div>
+          </div>
+          {/* 🎨 =============== END THEME SELECTOR =============== */}
+
           <div className="form-group">
             <label>🎬 Slide Titles</label>
             <p className="password-hint" style={{ marginBottom: '15px' }}>
@@ -179,15 +209,16 @@ function ConfigurePPT() {
           </div>
 
           <div className="action-buttons">
-            <button 
-              className="btn-back" 
+            <button
+              className="btn-back"
               onClick={() => navigate('/dashboard')}
               disabled={saving}
             >
               ← Back
             </button>
-            <button 
-              className="btn-generate" 
+
+            <button
+              className="btn-generate"
               onClick={handleGenerate}
               disabled={saving || !topic.trim() || sections.length === 0}
             >
@@ -197,7 +228,8 @@ function ConfigurePPT() {
         </div>
       </div>
     </div>
-  );
+);
+
 }
 
 export default ConfigurePPT;
