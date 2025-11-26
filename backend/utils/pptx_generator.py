@@ -217,238 +217,147 @@ def add_decorative_bar(slide, theme_colors):
 # ========== MAIN GENERATOR FUNCTION ==========
 
 def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') -> bytes:
-    """Generate a beautifully formatted PowerPoint presentation"""
-    
-    # Get theme colors
+    """Generate a clean, modern, professional PowerPoint presentation"""
+
+    # Validate theme
     if theme not in THEMES:
-        theme = 'professional_blue'
+        theme = "professional_blue"
     theme_colors = THEMES[theme]
-    
+
     prs = Presentation()
     prs.slide_width = Inches(10)
     prs.slide_height = Inches(7.5)
-    
-    # ========== TITLE SLIDE ==========
-    title_slide_layout = prs.slide_layouts[6]  # Blank layout
-    slide = prs.slides.add_slide(title_slide_layout)
-    
-    # Background gradient
+
+    # ===== TITLE SLIDE =====
+    slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank layout
     apply_gradient_background(slide, theme_colors)
 
-    # Soft overlay card in center
+    # Title Card
     try:
-        card = slide.shapes.add_shape(
+        title_card = slide.shapes.add_shape(
             MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
-            Inches(0.7),
-            Inches(1.6),
-            Inches(8.6),
-            Inches(3.2)
+            Inches(0.8), Inches(2),
+            Inches(8.4), Inches(2.5)
         )
-        card.fill.solid()
-        card.fill.fore_color.rgb = RGBColor(255, 255, 255)
-        card.fill.transparency = 0.15
-        card.line.fill.background()
-        shadow = card.shadow
-        shadow.inherit = False
-        shadow.blur_radius = Pt(18)
-        shadow.distance = Pt(4)
-        shadow.angle = 270.0
-        shadow.transparency = 0.6
-    except:
-        card = None
+        title_card.fill.solid()
+        title_card.fill.fore_color.rgb = RGBColor(255, 255, 255)
+        title_card.fill.transparency = 0.10
+        title_card.line.fill.background()
 
-    # Title text
-    left = Inches(1)
-    top = Inches(2.1)
-    width = Inches(8)
-    height = Inches(1.5)
-    
-    title_box = slide.shapes.add_textbox(left, top, width, height)
-    title_frame = title_box.text_frame
-    title_frame.text = topic
-    
-    title_paragraph = title_frame.paragraphs[0]
-    title_paragraph.alignment = PP_ALIGN.CENTER
-    title_paragraph.font.size = Pt(50)
-    title_paragraph.font.bold = True
-    title_paragraph.font.color.rgb = RGBColor(*theme_colors['title_color'])
-    
+        shadow = title_card.shadow
+        shadow.inherit = False
+        shadow.blur_radius = Pt(20)
+        shadow.distance = Pt(5)
+        shadow.transparency = 0.70
+    except:
+        pass
+
+    # Main Title
+    title_box = slide.shapes.add_textbox(Inches(1), Inches(2.4), Inches(8), Inches(1))
+    tf = title_box.text_frame
+    tf.text = topic
+    p = tf.paragraphs[0]
+    p.alignment = PP_ALIGN.CENTER
+    p.font.size = Pt(48)
+    p.font.bold = True
+    p.font.color.rgb = RGBColor(*theme_colors["title_color"])
+
     # Subtitle
-    subtitle_top = top + height + Inches(0.2)
-    subtitle_box = slide.shapes.add_textbox(left, subtitle_top, width, Inches(0.7))
-    subtitle_frame = subtitle_box.text_frame
-    subtitle_frame.text = "AI-Generated Presentation"
-    
-    subtitle_paragraph = subtitle_frame.paragraphs[0]
-    subtitle_paragraph.alignment = PP_ALIGN.CENTER
-    subtitle_paragraph.font.size = Pt(22)
-    subtitle_paragraph.font.color.rgb = RGBColor(*theme_colors['text_color'])
-    
-    # ========== CONTENT SLIDES ==========
-    for i, section in enumerate(sections, 1):
-        # Blank layout for full control
-        content_slide_layout = prs.slide_layouts[6]
-        slide = prs.slides.add_slide(content_slide_layout)
-        
-        # Gradient background
+    subtitle_box = slide.shapes.add_textbox(Inches(1), Inches(3.4), Inches(8), Inches(1))
+    sf = subtitle_box.text_frame
+    sf.text = "AI-Generated Presentation"
+    sp = sf.paragraphs[0]
+    sp.alignment = PP_ALIGN.CENTER
+    sp.font.size = Pt(24)
+    sp.font.color.rgb = RGBColor(*theme_colors["text_color"])
+
+    # ===== CONTENT SLIDES =====
+    for i, section in enumerate(sections, start=1):
+        slide = prs.slides.add_slide(prs.slide_layouts[6])
         apply_gradient_background(slide, theme_colors)
 
-        # Subtle diagonal overlay
-        try:
-            overlay = slide.shapes.add_shape(
-                MSO_AUTO_SHAPE_TYPE.RECTANGLE,
-                Inches(-1.0),
-                Inches(-0.5),
-                Inches(6.0),
-                Inches(8.5)
-            )
-            overlay.fill.solid()
-            overlay.fill.fore_color.rgb = RGBColor(*theme_colors['bg_end'])
-            overlay.fill.transparency = 0.35
-            overlay.rotation = -8
-            overlay.line.fill.background()
-        except:
-            overlay = None
-        
-        # Rounded title bar with shadow
-        try:
-            title_bar = slide.shapes.add_shape(
-                MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
-                Inches(0.5),
-                Inches(0.3),
-                Inches(9.0),
-                Inches(1.1)
-            )
-            title_bar.fill.solid()
-            title_bar.fill.fore_color.rgb = RGBColor(255, 255, 255)
-            title_bar.fill.transparency = 0.05
-            title_bar.line.fill.solid()
-            title_bar.line.fill.fore_color.rgb = RGBColor(*theme_colors['accent_color'])
-            title_bar.line.width = Pt(1.7)
+        # ----- HEADER BAR -----
+        header = slide.shapes.add_shape(
+            MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
+            Inches(0.5), Inches(0.4),
+            Inches(9), Inches(1)
+        )
+        header.fill.solid()
+        header.fill.fore_color.rgb = RGBColor(255, 255, 255)
+        header.fill.transparency = 0.03
+        header.line.fill.solid()
+        header.line.fill.fore_color.rgb = RGBColor(*theme_colors["accent_color"])
+        header.line.width = Pt(1.4)
 
-            tb_shadow = title_bar.shadow
-            tb_shadow.inherit = False
-            tb_shadow.blur_radius = Pt(10)
-            tb_shadow.distance = Pt(3)
-            tb_shadow.angle = 270.0
-            tb_shadow.transparency = 0.6
-        except:
-            title_bar = None
-        
-        # Icon for the slide
-        icon = get_icon_for_title(section['title'])
-        
-        # Title text on top of rounded bar
-        title_left = Inches(0.7)
-        title_top = Inches(0.45)
-        title_width = Inches(8.6)
-        title_height = Inches(0.9)
-        
-        title_box = slide.shapes.add_textbox(title_left, title_top, title_width, title_height)
-        title_frame = title_box.text_frame
-        
-        if icon:
-            title_frame.text = f"{icon}  {section['title']}"
-        else:
-            title_frame.text = section['title']
-        
-        title_paragraph = title_frame.paragraphs[0]
-        title_paragraph.font.size = Pt(34)
-        title_paragraph.font.bold = True
-        title_paragraph.font.color.rgb = RGBColor(*theme_colors['title_color'])
-        
-        # Thin accent line under header
-        try:
-            line_shape = slide.shapes.add_shape(
-                MSO_AUTO_SHAPE_TYPE.RECTANGLE,
-                Inches(0.7),
-                Inches(1.4),
-                Inches(8.6),
-                Inches(0.06)
-            )
-            line_shape.fill.solid()
-            line_shape.fill.fore_color.rgb = RGBColor(*theme_colors['accent_color'])
-            line_shape.line.fill.background()
-        except:
-            pass
-        
-        # ----- CONTENT AREA -----
-        content = section.get('content', '')
-        if content:
-            # Content card with soft shadow
-            try:
-                content_bg = slide.shapes.add_shape(
-                    MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
-                    Inches(0.8),
-                    Inches(1.75),
-                    Inches(8.4),
-                    Inches(4.8)
-                )
-                content_bg.fill.solid()
-                content_bg.fill.fore_color.rgb = RGBColor(255, 255, 255)
-                content_bg.fill.transparency = 0.02
-                content_bg.line.fill.background()
+        # Title text
+        icon = get_icon_for_title(section["title"])
+        title_text = f"{icon}  {section['title']}" if icon else section["title"]
 
-                c_shadow = content_bg.shadow
-                c_shadow.inherit = False
-                c_shadow.blur_radius = Pt(14)
-                c_shadow.distance = Pt(4)
-                c_shadow.angle = 270.0
-                c_shadow.transparency = 0.7
-            except:
-                content_bg = None
+        title_box = slide.shapes.add_textbox(Inches(0.8), Inches(0.55), Inches(8.4), Inches(0.8))
+        tf = title_box.text_frame
+        tf.text = title_text
+        tp = tf.paragraphs[0]
+        tp.font.size = Pt(32)
+        tp.font.bold = True
+        tp.font.color.rgb = RGBColor(*theme_colors["title_color"])
 
-            # Text inside content area
-            content_left = Inches(1.0)
-            content_top = Inches(1.9)
-            content_width = Inches(8.0)
-            content_height = Inches(4.4)
-            
-            content_box = slide.shapes.add_textbox(content_left, content_top, content_width, content_height)
-            text_frame = content_box.text_frame
-            text_frame.word_wrap = True
-            
-            cleaned_content = clean_text_formatting(content)
-            lines = [line.strip() for line in cleaned_content.split('\n') if line.strip()]
-            
-            for j, line in enumerate(lines):
-                if j == 0:
-                    p = text_frame.paragraphs[0]
-                else:
-                    p = text_frame.add_paragraph()
-                
-                p.text = line
-                p.level = 0
-                p.font.size = Pt(22)
-                p.font.color.rgb = RGBColor(*theme_colors['text_color'])
-                p.space_before = Pt(4)
-                p.space_after = Pt(4)
-                p.line_spacing = 1.2
-                p.bullet = True
-        
-        # Decorative accent bar at bottom (existing helper)
-        add_decorative_bar(slide, theme_colors)
-        
+        # Accent underline
+        underline = slide.shapes.add_shape(
+            MSO_AUTO_SHAPE_TYPE.RECTANGLE,
+            Inches(0.8), Inches(1.35),
+            Inches(8.4), Inches(0.07)
+        )
+        underline.fill.solid()
+        underline.fill.fore_color.rgb = RGBColor(*theme_colors["accent_color"])
+        underline.line.fill.background()
+
+        # ----- CONTENT CARD -----
+        content_bg = slide.shapes.add_shape(
+            MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
+            Inches(0.8), Inches(1.65),
+            Inches(8.4), Inches(4.8)
+        )
+        content_bg.fill.solid()
+        content_bg.fill.fore_color.rgb = RGBColor(255, 255, 255)
+        content_bg.fill.transparency = 0.04
+        content_bg.line.fill.background()
+
+        shadow = content_bg.shadow
+        shadow.inherit = False
+        shadow.blur_radius = Pt(12)
+        shadow.distance = Pt(3)
+        shadow.transparency = 0.6
+
+        # ----- CONTENT TEXT -----
+        text_box = slide.shapes.add_textbox(
+            Inches(1.1), Inches(1.85),
+            Inches(7.8), Inches(4.4)
+        )
+        tf = text_box.text_frame
+        tf.word_wrap = True
+
+        cleaned = clean_text_formatting(section.get("content", ""))
+        lines = [line.strip() for line in cleaned.split("\n") if line.strip()]
+
+        for j, line in enumerate(lines):
+            p = tf.paragraphs[0] if j == 0 else tf.add_paragraph()
+            p.text = line
+            p.bullet = True
+            p.font.size = Pt(22)
+            p.font.color.rgb = RGBColor(*theme_colors["text_color"])
+            p.space_before = Pt(6)
+            p.space_after = Pt(6)
+
         # Slide number
-        try:
-            slide_num_box = slide.shapes.add_textbox(
-                Inches(9),
-                Inches(7),
-                Inches(0.5),
-                Inches(0.3)
-            )
-            slide_num_frame = slide_num_box.text_frame
-            slide_num_frame.text = str(i)
-            slide_num_para = slide_num_frame.paragraphs[0]
-            slide_num_para.font.size = Pt(14)
-            slide_num_para.font.color.rgb = RGBColor(*theme_colors['text_color'])
-            slide_num_para.alignment = PP_ALIGN.RIGHT
-        except:
-            pass
-    
-    # Save to bytes
-    file_stream = io.BytesIO()
-    prs.save(file_stream)
-    file_stream.seek(0)
-    
-    return file_stream.getvalue()
+        num = slide.shapes.add_textbox(Inches(9), Inches(7), Inches(0.5), Inches(0.3))
+        n = num.text_frame.paragraphs[0]
+        n.text = str(i)
+        n.font.size = Pt(14)
+        n.font.color.rgb = RGBColor(*theme_colors["text_color"])
+        n.alignment = PP_ALIGN.RIGHT
+
+    # Output PPTX
+    stream = io.BytesIO()
+    prs.save(stream)
+    stream.seek(0)
+    return stream.getvalue()
