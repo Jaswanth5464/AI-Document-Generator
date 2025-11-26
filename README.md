@@ -32,10 +32,11 @@
 ---
 
 </div>
+## 📋 live link:
+https://ai-document-generator-taupe.vercel.app
 
-## 📋 Overview
 
-An intelligent full-stack web application that leverages Google's Gemini AI to generate, refine, and export professional Microsoft Word documents and PowerPoint presentations.
+
 ## 📋 Overview
 
 An intelligent full-stack web application that leverages Google's Gemini AI to generate, refine, and export professional Microsoft Word documents and PowerPoint presentations.
@@ -244,9 +245,9 @@ MIT License - feel free to use for any purpose
 ## 👤 Author
 
 **Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
+- GitHub: [@yourusername](https://github.com/jaswanth5464)
+- LinkedIn: [Your LinkedIn](www.linkedin.com/in/jaswanth-kanamrlapudi-a41197252)
+- Email: jaswanth5464@gmail.com
 
 ---
 
