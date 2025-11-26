@@ -1690,3 +1690,112 @@ body {
   cursor: not-allowed;
   transform: none;
 }
+
+/* ========== THEME SELECTOR ========== */
+.theme-selector {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: white;
+}
+
+.theme-selector:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ========== THEME PREVIEW ========== */
+.theme-preview {
+  margin-top: 20px;
+  padding: 30px;
+  border-radius: 15px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.preview-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.preview-content {
+  margin-top: 15px;
+}
+
+.preview-bullet {
+  font-size: 16px;
+  margin: 8px 0;
+  padding-left: 10px;
+}
+
+/* Professional Blue Theme */
+.theme-professional_blue {
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+}
+
+.theme-professional_blue .preview-title {
+  color: #1976D2;
+}
+
+.theme-professional_blue .preview-bullet {
+  color: #212121;
+}
+
+/* Modern Dark Theme */
+.theme-modern_dark {
+  background: linear-gradient(135deg, #303030 0%, #212121 100%);
+}
+
+.theme-modern_dark .preview-title {
+  color: #FFFFFF;
+}
+
+.theme-modern_dark .preview-bullet {
+  color: #DCDCDC;
+}
+
+/* Vibrant Orange Theme */
+.theme-vibrant_orange {
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+}
+
+.theme-vibrant_orange .preview-title {
+  color: #E65100;
+}
+
+.theme-vibrant_orange .preview-bullet {
+  color: #3E2723;
+}
+
+/* Nature Green Theme */
+.theme-nature_green {
+  background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+}
+
+.theme-nature_green .preview-title {
+  color: #1B5E20;
+}
+
+.theme-nature_green .preview-bullet {
+  color: #212121;
+}
+
+/* Elegant Purple Theme */
+.theme-elegant_purple {
+  background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+}
+
+.theme-elegant_purple .preview-title {
+  color: #4A148C;
+}
+
+.theme-elegant_purple .preview-bullet {
+  color: #212121;
+}
