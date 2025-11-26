@@ -169,52 +169,7 @@ npm run dev
 ---
 
 📊 System Architecture Flowchart
-                     ┌──────────────────────────┐
-                     │          USER            │
-                     │ (Interacts with system)  │
-                     └─────────────┬────────────┘
-                                   │
-                                   ▼
-                     ┌──────────────────────────┐
-                     │      REACT FRONTEND      │
-                     │ (UI / Sends API Calls)   │
-                     └─────────────┬────────────┘
-                                   │
-                                   ▼
-                     ┌──────────────────────────┐
-                     │        REST API          │
-                     │ (Frontend → Backend)     │
-                     └─────────────┬────────────┘
-                                   │
-                                   ▼
-                     ┌──────────────────────────┐
-                     │      FASTAPI BACKEND     │
-                     │ - Validates Input        │
-                     │ - Calls Gemini AI        │
-                     │ - Saves to Firebase      │
-                     │ - Generates Docs         │
-                     └───────┬─────────┬────────┘
-                             │         │
-                  ┌──────────┘         └───────────┐
-                  ▼                                  ▼
-     ┌──────────────────────────┐       ┌──────────────────────────┐
-     │       GEMINI AI          │       │     FIREBASE DATABASE    │
-     │ (Content Generation)     │       │ (Stores User Projects)   │
-     └─────────────┬────────────┘       └─────────────┬────────────┘
-                   │                                    │
-                   └──────────────┬─────────────────────┘
-                                  ▼
-                     ┌──────────────────────────┐
-                     │ DOCUMENT GENERATORS       │
-                     │ (DOCX / PPTX Creation)    │
-                     └─────────────┬────────────┘
-                                   │
-                                   ▼
-                     ┌──────────────────────────┐
-                     │     DOWNLOAD TO USER     │
-                     │ (Final Output Sent Back) │
-                     └──────────────────────────┘
-
+     <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/0b948756-9b56-485d-a384-543656a0e036" />
 
 ## 📚 API Documentation
 
