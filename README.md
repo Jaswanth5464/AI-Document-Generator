@@ -69,6 +69,36 @@ An intelligent full-stack web application that leverages Google's Gemini AI to g
 - [Google Gemini API Key](https://makersuite.google.com/app/apikey)
 - [Firebase Project](https://console.firebase.google.com/)
 
+flowchart TD
+
+    %% NODES
+    U([USER<br/>(Interacts with system)])
+    R([REACT FRONTEND<br/>(UI / Sends API Calls)])
+    API([REST API])
+    F([FASTAPI BACKEND<br/>- Validates Input<br/>- Calls Gemini AI<br/>- Saves to Firebase<br/>- Generates Docs])
+    G([GEMINI AI<br/>(Content Generation)])
+    DB([FIREBASE DATABASE<br/>(Stores User Projects)])
+    D([DOCUMENT GENERATORS<br/>(DOCX / PPTX Creation)])
+    DL([DOWNLOAD TO USER])
+
+    %% CONNECTIONS
+    U --> R --> API --> F
+    F --> G
+    F --> DB
+    G --> F
+    DB --> F
+    F --> D --> DL
+
+    %% COLORS
+    style U fill:#cfe3ff,stroke:#4d79ff,stroke-width:2px
+    style R fill:#e3d2ff,stroke:#9b59b6,stroke-width:2px
+    style API fill:#fdf5a6,stroke:#f1c40f,stroke-width:2px
+    style F fill:#d4f8d4,stroke:#27ae60,stroke-width:2px
+    style G fill:#b6e6fa,stroke:#2980b9,stroke-width:2px
+    style DB fill:#ffe9b3,stroke:#e67e22,stroke-width:2px
+    style D fill:#ffcccc,stroke:#e74c3c,stroke-width:2px
+    style DL fill:#c6f4f1,stroke:#16a085,stroke-width:2px
+
 ### Installation
 
 ```bash
