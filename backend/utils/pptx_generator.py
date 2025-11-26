@@ -3,6 +3,8 @@ from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 from pptx.enum.dml import MSO_THEME_COLOR
+from pptx.enum.shapes import MSO_AUTO_SHAPE_TYPE
+
 import io
 import re
 
@@ -230,12 +232,34 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
     title_slide_layout = prs.slide_layouts[6]  # Blank layout
     slide = prs.slides.add_slide(title_slide_layout)
     
-    # Apply gradient background
+    # Background gradient
     apply_gradient_background(slide, theme_colors)
-    
-    # Add title
+
+    # Soft overlay card in center
+    try:
+        card = slide.shapes.add_shape(
+            MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
+            Inches(0.7),
+            Inches(1.6),
+            Inches(8.6),
+            Inches(3.2)
+        )
+        card.fill.solid()
+        card.fill.fore_color.rgb = RGBColor(255, 255, 255)
+        card.fill.transparency = 0.15
+        card.line.fill.background()
+        shadow = card.shadow
+        shadow.inherit = False
+        shadow.blur_radius = Pt(18)
+        shadow.distance = Pt(4)
+        shadow.angle = 270.0
+        shadow.transparency = 0.6
+    except:
+        card = None
+
+    # Title text
     left = Inches(1)
-    top = Inches(2.3)   # moved slightly up
+    top = Inches(2.1)
     width = Inches(8)
     height = Inches(1.5)
     
@@ -243,60 +267,104 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
     title_frame = title_box.text_frame
     title_frame.text = topic
     
-    # Style title
     title_paragraph = title_frame.paragraphs[0]
     title_paragraph.alignment = PP_ALIGN.CENTER
     title_paragraph.font.size = Pt(50)
     title_paragraph.font.bold = True
     title_paragraph.font.color.rgb = RGBColor(*theme_colors['title_color'])
     
-    # Add subtitle
-    subtitle_top = top + height + Inches(0.25)
+    # Subtitle
+    subtitle_top = top + height + Inches(0.2)
     subtitle_box = slide.shapes.add_textbox(left, subtitle_top, width, Inches(0.7))
     subtitle_frame = subtitle_box.text_frame
     subtitle_frame.text = "AI-Generated Presentation"
     
     subtitle_paragraph = subtitle_frame.paragraphs[0]
     subtitle_paragraph.alignment = PP_ALIGN.CENTER
-    subtitle_paragraph.font.size = Pt(24)
+    subtitle_paragraph.font.size = Pt(22)
     subtitle_paragraph.font.color.rgb = RGBColor(*theme_colors['text_color'])
     
     # ========== CONTENT SLIDES ==========
     for i, section in enumerate(sections, 1):
+        # Blank layout for full control
         content_slide_layout = prs.slide_layouts[6]
         slide = prs.slides.add_slide(content_slide_layout)
         
-        # Apply gradient background
+        # Gradient background
         apply_gradient_background(slide, theme_colors)
+
+        # Subtle diagonal overlay
+        try:
+            overlay = slide.shapes.add_shape(
+                MSO_AUTO_SHAPE_TYPE.RECTANGLE,
+                Inches(-1.0),
+                Inches(-0.5),
+                Inches(6.0),
+                Inches(8.5)
+            )
+            overlay.fill.solid()
+            overlay.fill.fore_color.rgb = RGBColor(*theme_colors['bg_end'])
+            overlay.fill.transparency = 0.35
+            overlay.rotation = -8
+            overlay.line.fill.background()
+        except:
+            overlay = None
         
-        # Get icon
+        # Rounded title bar with shadow
+        try:
+            title_bar = slide.shapes.add_shape(
+                MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
+                Inches(0.5),
+                Inches(0.3),
+                Inches(9.0),
+                Inches(1.1)
+            )
+            title_bar.fill.solid()
+            title_bar.fill.fore_color.rgb = RGBColor(255, 255, 255)
+            title_bar.fill.transparency = 0.05
+            title_bar.line.fill.solid()
+            title_bar.line.fill.fore_color.rgb = RGBColor(*theme_colors['accent_color'])
+            title_bar.line.width = Pt(1.7)
+
+            tb_shadow = title_bar.shadow
+            tb_shadow.inherit = False
+            tb_shadow.blur_radius = Pt(10)
+            tb_shadow.distance = Pt(3)
+            tb_shadow.angle = 270.0
+            tb_shadow.transparency = 0.6
+        except:
+            title_bar = None
+        
+        # Icon for the slide
         icon = get_icon_for_title(section['title'])
         
-        # Add title
-        title_left = Inches(0.5)
-        title_top = Inches(0.3)      # improved spacing
-        title_width = Inches(9)
-        title_height = Inches(1.1)
+        # Title text on top of rounded bar
+        title_left = Inches(0.7)
+        title_top = Inches(0.45)
+        title_width = Inches(8.6)
+        title_height = Inches(0.9)
         
         title_box = slide.shapes.add_textbox(title_left, title_top, title_width, title_height)
         title_frame = title_box.text_frame
         
-        title_frame.text = f"{icon}  {section['title']}" if icon else section['title']
+        if icon:
+            title_frame.text = f"{icon}  {section['title']}"
+        else:
+            title_frame.text = section['title']
         
-        # Style title
         title_paragraph = title_frame.paragraphs[0]
-        title_paragraph.font.size = Pt(38)
+        title_paragraph.font.size = Pt(34)
         title_paragraph.font.bold = True
         title_paragraph.font.color.rgb = RGBColor(*theme_colors['title_color'])
         
-        # Decorative line under title
+        # Thin accent line under header
         try:
             line_shape = slide.shapes.add_shape(
-                1,  # Rectangle
-                Inches(0.5),
-                Inches(1.25),  # brought closer
-                Inches(9),
-                Inches(0.08)   # thicker
+                MSO_AUTO_SHAPE_TYPE.RECTANGLE,
+                Inches(0.7),
+                Inches(1.4),
+                Inches(8.6),
+                Inches(0.06)
             )
             line_shape.fill.solid()
             line_shape.fill.fore_color.rgb = RGBColor(*theme_colors['accent_color'])
@@ -304,13 +372,37 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
         except:
             pass
         
-        # Add content
+        # ----- CONTENT AREA -----
         content = section.get('content', '')
         if content:
-            content_left = Inches(0.8)
-            content_top = Inches(1.7)     # moved higher
-            content_width = Inches(8.4)
-            content_height = Inches(5)
+            # Content card with soft shadow
+            try:
+                content_bg = slide.shapes.add_shape(
+                    MSO_AUTO_SHAPE_TYPE.ROUNDED_RECTANGLE,
+                    Inches(0.8),
+                    Inches(1.75),
+                    Inches(8.4),
+                    Inches(4.8)
+                )
+                content_bg.fill.solid()
+                content_bg.fill.fore_color.rgb = RGBColor(255, 255, 255)
+                content_bg.fill.transparency = 0.02
+                content_bg.line.fill.background()
+
+                c_shadow = content_bg.shadow
+                c_shadow.inherit = False
+                c_shadow.blur_radius = Pt(14)
+                c_shadow.distance = Pt(4)
+                c_shadow.angle = 270.0
+                c_shadow.transparency = 0.7
+            except:
+                content_bg = None
+
+            # Text inside content area
+            content_left = Inches(1.0)
+            content_top = Inches(1.9)
+            content_width = Inches(8.0)
+            content_height = Inches(4.4)
             
             content_box = slide.shapes.add_textbox(content_left, content_top, content_width, content_height)
             text_frame = content_box.text_frame
@@ -327,14 +419,14 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
                 
                 p.text = line
                 p.level = 0
-                p.font.size = Pt(22)  # larger + clean
+                p.font.size = Pt(22)
                 p.font.color.rgb = RGBColor(*theme_colors['text_color'])
-                p.space_before = Pt(6)   # reduced space
-                p.space_after = Pt(6)
+                p.space_before = Pt(4)
+                p.space_after = Pt(4)
                 p.line_spacing = 1.2
                 p.bullet = True
         
-        # Accent bar bottom
+        # Decorative accent bar at bottom (existing helper)
         add_decorative_bar(slide, theme_colors)
         
         # Slide number
@@ -347,7 +439,6 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
             )
             slide_num_frame = slide_num_box.text_frame
             slide_num_frame.text = str(i)
-            
             slide_num_para = slide_num_frame.paragraphs[0]
             slide_num_para.font.size = Pt(14)
             slide_num_para.font.color.rgb = RGBColor(*theme_colors['text_color'])
