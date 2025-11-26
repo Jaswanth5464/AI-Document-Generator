@@ -58,7 +58,8 @@ class ExportRequest(BaseModel):
     topic: str
     sections: List[Section]
     docType: str
-    theme: Optional[str] = 'professional_blue'  # Add this line
+    theme: Optional[str] = "professional_blue"
+
 # ============ ROUTES ============
 
 @app.api_route("/", methods=["GET", "HEAD"])
@@ -139,22 +140,35 @@ Do not add any preamble or explanation, just provide the refined content.
 async def export_document(request: ExportRequest):
     """Export document as .docx or .pptx"""
     try:
+        print("\n===== EXPORT REQUEST RECEIVED =====")
+        print("Topic:", request.topic)
+        print("DocType:", request.docType)
+        print("Theme:", request.theme)
+        print("Sections received:", len(request.sections))
+
+        # 🔥 FIX: Convert Pydantic Section → dict
+        sections_data = [
+            {
+                "id": s.id,
+                "title": s.title,
+                "content": s.content
+            }
+            for s in request.sections
+        ]
+
+        print("Converted sections:", sections_data)
+
         if request.docType == "docx":
-            # Generate Word document
-            file_bytes = generate_docx(request.topic, request.sections)
+            file_bytes = generate_docx(request.topic, sections_data)
             filename = f"{request.topic.replace(' ', '_')}.docx"
             media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        
+
         else:  # pptx
-            # Get theme from request (default to professional_blue)
-            theme = getattr(request, 'theme', 'professional_blue')
-            
-            # Generate PowerPoint with theme
-            file_bytes = generate_pptx(request.topic, request.sections, theme)
+            theme = request.theme or "professional_blue"
+            file_bytes = generate_pptx(request.topic, sections_data, theme)
             filename = f"{request.topic.replace(' ', '_')}.pptx"
             media_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        
-        # Return file
+
         return StreamingResponse(
             io.BytesIO(file_bytes),
             media_type=media_type,
@@ -162,10 +176,11 @@ async def export_document(request: ExportRequest):
                 "Content-Disposition": f"attachment; filename={filename}"
             }
         )
-    
+
     except Exception as e:
-        print(f"Error exporting document: {e}")
+        print("❌ EXPORT ERROR:", e)
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/generate-template")
 async def generate_template(topic: str, doc_type: str, num_sections: int = 5):
