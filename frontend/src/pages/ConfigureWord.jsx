@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import SectionEditor from '../components/SectionEditor';
+import API_URL from '../config'; // ✅ NEW: Import API_URL
 
 function ConfigureWord() {
   const { projectId } = useParams();
@@ -16,6 +17,7 @@ function ConfigureWord() {
   ]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [suggesting, setSuggesting] = useState(false); // ✅ NEW: AI suggestion state
 
   useEffect(() => {
     loadProject();
@@ -47,7 +49,36 @@ function ConfigureWord() {
     }
   };
 
-  // ✅ UPDATED FUNCTION - Navigate to generation page
+  // ✅ NEW: AI Template Suggestion Function
+  const handleAISuggest = async () => {
+    if (!topic.trim()) {
+      alert('⚠️ Please enter a topic first!');
+      return;
+    }
+
+    setSuggesting(true);
+    try {
+      const response = await fetch(
+        `${API_URL}/api/generate-template?topic=${encodeURIComponent(topic)}&doc_type=docx&num_sections=5`,
+        { method: 'POST' }
+      );
+
+      if (!response.ok) throw new Error('Failed to generate template');
+
+      const data = await response.json();
+      
+      // Replace current sections with AI suggestions
+      setSections(data.sections);
+      alert('✅ AI has suggested section titles! You can edit them if needed.');
+      
+    } catch (error) {
+      console.error('Error generating template:', error);
+      alert('❌ Failed to generate suggestions. Please try again.');
+    } finally {
+      setSuggesting(false);
+    }
+  };
+
   const handleGenerate = async () => {
     if (!topic.trim()) {
       alert('⚠️ Please enter a topic!');
@@ -77,7 +108,6 @@ function ConfigureWord() {
         lastModified: new Date()
       });
 
-      // ✅ Navigate to generation page
       navigate(`/generate/${projectId}`);
     } catch (error) {
       console.error('Error saving:', error);
@@ -121,6 +151,21 @@ function ConfigureWord() {
             />
             <p className="password-hint">
               This will be the main topic for your document
+            </p>
+          </div>
+
+          {/* ✅ NEW: AI Suggestion Button */}
+          <div className="form-group">
+            <button 
+              className="btn-ai-suggest" 
+              onClick={handleAISuggest}
+              disabled={!topic.trim() || suggesting}
+              type="button"
+            >
+              {suggesting ? '🤖 AI is thinking...' : '✨ AI Suggest Sections'}
+            </button>
+            <p className="password-hint">
+              Let AI suggest section titles based on your topic
             </p>
           </div>
 
