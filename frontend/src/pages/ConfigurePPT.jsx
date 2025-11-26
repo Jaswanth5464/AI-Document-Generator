@@ -19,7 +19,7 @@ function ConfigurePPT() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [suggesting, setSuggesting] = useState(false); // ✅ NEW: AI suggestion state
-
+  const [selectedTheme, setSelectedTheme] = useState('professional_blue'); // ADD THIS LINE
   useEffect(() => {
     loadProject();
   }, [projectId]);
