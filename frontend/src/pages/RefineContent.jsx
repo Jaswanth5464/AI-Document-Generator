@@ -136,7 +136,7 @@ function RefineContent() {
     setExporting(true);
     
     try {
-      const response = await fetch('http://localhost:8000/api/export-document', {
+      const response = await fetch(`${API_URL}/api/export-document`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json'
