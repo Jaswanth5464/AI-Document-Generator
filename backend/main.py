@@ -146,18 +146,25 @@ async def export_document(request: ExportRequest):
         print("Theme:", request.theme)
         print("Sections received:", len(request.sections))
 
-        # 🔥 FIX: Convert Pydantic Section → dict
-        sections_data = [
-            {
-                "id": s.id,
-                "title": s.title,
-                "content": s.content
-            }
-            for s in request.sections
-        ]
+        # 🔥 SAFE conversion: works for Pydantic objects & dicts
+        sections_data = []
+        for s in request.sections:
+            if isinstance(s, dict):  # frontend
+                sections_data.append({
+                    "id": s.get("id"),
+                    "title": s.get("title"),
+                    "content": s.get("content")
+                })
+            else:  # Pydantic Section
+                sections_data.append({
+                    "id": s.id,
+                    "title": s.title,
+                    "content": s.content
+                })
 
-        print("Converted sections:", sections_data)
+        print("Converted sections (final):", sections_data)
 
+        # Generate file
         if request.docType == "docx":
             file_bytes = generate_docx(request.topic, sections_data)
             filename = f"{request.topic.replace(' ', '_')}.docx"
@@ -169,6 +176,7 @@ async def export_document(request: ExportRequest):
             filename = f"{request.topic.replace(' ', '_')}.pptx"
             media_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
 
+        # Send file
         return StreamingResponse(
             io.BytesIO(file_bytes),
             media_type=media_type,
@@ -179,7 +187,9 @@ async def export_document(request: ExportRequest):
 
     except Exception as e:
         print("❌ EXPORT ERROR:", e)
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @app.post("/api/generate-template")
