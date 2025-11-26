@@ -58,7 +58,7 @@ class ExportRequest(BaseModel):
     topic: str
     sections: List[Section]
     docType: str
-
+    theme: Optional[str] = 'professional_blue'  # Add this line
 # ============ ROUTES ============
 
 @app.api_route("/", methods=["GET", "HEAD"])
@@ -139,59 +139,32 @@ Do not add any preamble or explanation, just provide the refined content.
 async def export_document(request: ExportRequest):
     """Export document as .docx or .pptx"""
     try:
-        print(f"\n{'='*50}")
-        print(f"Export Request Received")
-        print(f"{'='*50}")
-        print(f"Topic: {request.topic}")
-        print(f"Doc Type: {request.docType}")
-        print(f"Number of sections: {len(request.sections)}")
-        
-        # Convert Pydantic models to dictionaries
-        sections_data = []
-        for section in request.sections:
-            section_dict = {
-                'id': section.id,
-                'title': section.title,
-                'content': section.content
-            }
-            sections_data.append(section_dict)
-            print(f"  - Section {section.id}: {section.title} ({len(section.content)} chars)")
-        
-        print(f"\nGenerating {request.docType} file...")
-        
         if request.docType == "docx":
             # Generate Word document
-            file_bytes = generate_docx(request.topic, sections_data)
+            file_bytes = generate_docx(request.topic, request.sections)
             filename = f"{request.topic.replace(' ', '_')}.docx"
             media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            print(f"✅ Word document generated: {len(file_bytes)} bytes")
         
         else:  # pptx
-            # Generate PowerPoint
-            file_bytes = generate_pptx(request.topic, sections_data)
+            # Get theme from request (default to professional_blue)
+            theme = getattr(request, 'theme', 'professional_blue')
+            
+            # Generate PowerPoint with theme
+            file_bytes = generate_pptx(request.topic, request.sections, theme)
             filename = f"{request.topic.replace(' ', '_')}.pptx"
             media_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-            print(f"✅ PowerPoint generated: {len(file_bytes)} bytes")
-        
-        print(f"📥 Sending file: {filename}")
-        print(f"{'='*50}\n")
         
         # Return file
         return StreamingResponse(
             io.BytesIO(file_bytes),
             media_type=media_type,
             headers={
-                "Content-Disposition": f"attachment; filename={filename}",
-                "Access-Control-Expose-Headers": "Content-Disposition"
+                "Content-Disposition": f"attachment; filename={filename}"
             }
         )
     
     except Exception as e:
-        print(f"\n❌ ERROR EXPORTING DOCUMENT:")
-        print(f"Error: {e}")
-        print(f"Traceback:")
-        traceback.print_exc()
-        print(f"{'='*50}\n")
+        print(f"Error exporting document: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/generate-template")
