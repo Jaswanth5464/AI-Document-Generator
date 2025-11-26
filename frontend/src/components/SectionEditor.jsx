@@ -36,12 +36,13 @@ function SectionEditor({ sections, setSections }) {
             <span className="drag-handle">⋮⋮</span>
             <span className="section-number">{index + 1}</span>
             <input
-              type="text"
-              className="section-input section-input-mobile"
-              placeholder="e.g., Introduction, Market Analysis..."
-              value={section.title}
-              onChange={(e) => updateSection(section.id, e.target.value)}
-            />
+             type="text"
+            className="section-title-input"
+            placeholder="e.g., Introduction, Market Analysis..."
+            value={section.title}
+            onChange={(e) => updateSection(section.id, e.target.value)}
+              />
+
             <button
               type="button"
               className="btn-icon"
