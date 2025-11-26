@@ -169,7 +169,8 @@ npm run dev
 ---
 
 ### 📊 System Architecture Flowchart
-     <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/0b948756-9b56-485d-a384-543656a0e036" />
+
+   <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/0b948756-9b56-485d-a384-543656a0e036" />
 
 ## 📚 API Documentation
 
