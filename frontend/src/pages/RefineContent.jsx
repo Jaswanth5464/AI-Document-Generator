@@ -1,3 +1,4 @@
+import API_URL from "../config";
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -52,7 +53,7 @@ function RefineContent() {
     setSections(updatedSections);
 
     try {
-      const response = await fetch('http://localhost:8000/api/refine-section', {
+     const response = await fetch(`${API_URL}/api/refine-section`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
