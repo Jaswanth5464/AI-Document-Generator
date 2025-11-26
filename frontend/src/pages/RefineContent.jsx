@@ -149,6 +149,7 @@ function RefineContent() {
             content: s.content
           })),
           docType: project.type
+          theme: project.theme || "professional_blue"   // ✅ ADD THIS
         })
       });
 
