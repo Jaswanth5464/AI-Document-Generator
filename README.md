@@ -2,7 +2,7 @@
 
 ---
 
-```markdown
+
 <div align="center">
 
 # 🚀 AI-Powered Document Generator
