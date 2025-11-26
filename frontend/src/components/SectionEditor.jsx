@@ -37,7 +37,7 @@ function SectionEditor({ sections, setSections }) {
             <span className="section-number">{index + 1}</span>
             <input
               type="text"
-              className="section-input"
+              className="section-input section-input-mobile"
               placeholder="e.g., Introduction, Market Analysis..."
               value={section.title}
               onChange={(e) => updateSection(section.id, e.target.value)}
