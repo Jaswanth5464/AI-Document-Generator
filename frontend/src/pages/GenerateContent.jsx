@@ -1,3 +1,4 @@
+import API_URL from "../config";
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
@@ -61,7 +62,7 @@ function GenerateContent() {
       
       try {
         // Call backend to generate content
-        const response = await fetch('http://localhost:8000/api/generate-section', {
+       const response = await fetch(`${API_URL}/api/generate-section`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
