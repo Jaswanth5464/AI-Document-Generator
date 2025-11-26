@@ -198,54 +198,101 @@ async def export_document(request: ExportRequest):
 async def generate_template(topic: str, doc_type: str, num_sections: int = 5):
     """Generate suggested outline/template"""
     try:
-        print(f"Generating template for: {topic}")
-        
         if doc_type == "docx":
             prompt = f"""
-Create an outline for a professional document about: {topic}
+Generate EXACTLY {num_sections} section titles for a professional document about: {topic}
 
-Provide {num_sections} section titles that would make a comprehensive document.
-Return ONLY the section titles, one per line, numbered.
+IMPORTANT RULES:
+- Return ONLY the section titles
+- One title per line
+- NO explanations, NO introductions, NO extra text
+- Start each line with just the title
+- Do NOT number them
+
 Example format:
-1. Introduction
-2. Background
-3. Analysis
+Introduction
+Market Analysis
+Key Findings
+Recommendations
+Conclusion
 """
         else:
             prompt = f"""
-Create a PowerPoint presentation outline about: {topic}
+Generate EXACTLY {num_sections} slide titles for a PowerPoint presentation about: {topic}
 
-Provide {num_sections} slide titles for an effective presentation.
-Return ONLY the slide titles, one per line, numbered.
+IMPORTANT RULES:
+- Return ONLY the slide titles
+- One title per line
+- NO explanations, NO introductions, NO extra text
+- Start each line with just the title
+- Do NOT number them
+- Keep titles SHORT (3-7 words max)
+
 Example format:
-1. Title Slide
-2. Overview
-3. Key Points
+Introduction to AI Trading
+How AI Analyzes Markets
+Key Trading Algorithms
+Benefits and Risks
+Future of AI Trading
 """
         
         response = model.generate_content(prompt)
+        text = response.text.strip()
         
-        # Parse response into list
-        lines = response.text.strip().split('\n')
+        # Clean up the response - remove any explanatory text
+        lines = text.split('\n')
+        clean_lines = []
+        
+        for line in lines:
+            line = line.strip()
+            
+            # Skip empty lines
+            if not line:
+                continue
+            
+            # Skip lines that look like explanations
+            if any(skip_word in line.lower() for skip_word in [
+                'here are', 'these are', 'following', 'presentation', 
+                'document', 'titles', 'for an', 'about'
+            ]):
+                continue
+            
+            # Remove numbering (1., 2., etc.)
+            if line[0].isdigit() and ('.' in line or ')' in line):
+                # Remove "1. " or "1) " from start
+                line = line.split('.', 1)[-1].split(')', 1)[-1].strip()
+            
+            # Remove asterisks or dashes from markdown
+            line = line.lstrip('*-•').strip()
+            
+            # Only add if it's not too long (likely a description)
+            if len(line.split()) <= 15:  # Max 15 words for a title
+                clean_lines.append(line)
+        
+        # Take only the requested number of sections
+        clean_lines = clean_lines[:num_sections]
+        
+        # If we don't have enough, add generic ones
+        while len(clean_lines) < num_sections:
+            if doc_type == "docx":
+                clean_lines.append(f"Section {len(clean_lines) + 1}")
+            else:
+                clean_lines.append(f"Slide {len(clean_lines) + 1}")
+        
+        # Create sections array
         sections = []
-        for i, line in enumerate(lines[:num_sections], 1):
-            # Remove numbering if present
-            title = line.split('.', 1)[-1].strip() if '.' in line else line.strip()
-            if title:
-                sections.append({
-                    "id": i,
-                    "title": title,
-                    "content": ""
-                })
+        for i, title in enumerate(clean_lines, 1):
+            sections.append({
+                "id": i,
+                "title": title,
+                "content": ""
+            })
         
-        print(f"Generated {len(sections)} template sections")
         return {"sections": sections}
     
     except Exception as e:
-        print(f"Error generating template: {e}")
-        traceback.print_exc()
+        print(f"Error in generate_template: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 if __name__ == "__main__":
     import uvicorn
     print("\n" + "="*60)
