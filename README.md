@@ -3,14 +3,39 @@
 ---
 
 ```markdown
+<div align="center">
+
 # 🚀 AI-Powered Document Generator
 
-> Transform your ideas into professional documents and presentations using AI
+**Transform your ideas into professional documents and presentations using AI**
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://ai-document-generator-taupe.vercel.app/)
+<p>
+  <a href="https://ai-document-generator-taupe.vercel.app/">
+    <img src="https://img.shields.io/badge/🌐_Live_Demo-Visit_App-4CAF50?style=for-the-badge" alt="Live Demo">
+  </a>
+  <a href="#">
+    <img src="https://img.shields.io/badge/📹_Demo-Watch_Video-FF0000?style=for-the-badge" alt="Video Demo">
+  </a>
+  <a href="#-quick-start">
+    <img src="https://img.shields.io/badge/📖_Docs-Read_More-2196F3?style=for-the-badge" alt="Documentation">
+  </a>
+</p>
+
+<p>
+  <img src="https://img.shields.io/badge/React-18.2-61DAFB?logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/FastAPI-0.104-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Firebase-10.7-FFCA28?logo=firebase&logoColor=black" alt="Firebase">
+  <img src="https://img.shields.io/badge/Gemini_AI-Latest-4285F4?logo=google&logoColor=white" alt="Gemini AI">
+</p>
 
 ---
 
+</div>
+
+## 📋 Overview
+
+An intelligent full-stack web application that leverages Google's Gemini AI to generate, refine, and export professional Microsoft Word documents and PowerPoint presentations.
 ## 📋 Overview
 
 An intelligent full-stack web application that leverages Google's Gemini AI to generate, refine, and export professional Microsoft Word documents and PowerPoint presentations.
