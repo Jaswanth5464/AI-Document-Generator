@@ -215,6 +215,7 @@ def add_decorative_bar(slide, theme_colors):
         pass  # Skip if error
 
 # ========== MAIN GENERATOR FUNCTION ==========
+# ========== MAIN GENERATOR FUNCTION ==========
 def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') -> bytes:
     """Generate a beautifully styled PowerPoint presentation with theme support."""
 
@@ -369,17 +370,24 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
         # CONTENT TEXT
         content = section.get("content", "")
         if content:
+            # ----------------- FIX: CONDITIONAL FONT SIZING -----------------
+            cleaned = clean_text_formatting(content)
+            lines = [line.strip() for line in cleaned.split("\n") if line.strip()]
+            line_count = len(lines)
+            
+            # Determine font size based on line count
+            font_size = Pt(22)  # Default size
+            if line_count >= 8 and line_count < 10:
+                font_size = Pt(18)
+            elif line_count >= 10:
+                font_size = Pt(16)
+            # ----------------- END FIX -----------------
+
             content_box = slide.shapes.add_textbox(Inches(1.0), Inches(1.75), Inches(8), Inches(4.8))
             tf = content_box.text_frame
             tf.word_wrap = True
 
-            cleaned = clean_text_formatting(content)
-            lines = cleaned.split("\n")
-
             for idx, line in enumerate(lines):
-                if not line.strip():
-                    continue
-
                 if idx == 0:
                     p = tf.paragraphs[0]
                 else:
@@ -387,7 +395,7 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
 
                 p.text = line.strip()
                 p.bullet = True
-                p.font.size = Pt(22)
+                p.font.size = font_size # Apply calculated size
                 p.font.color.rgb = RGBColor(*theme_colors['text_color'])
                 p.line_spacing = 1.25
 
