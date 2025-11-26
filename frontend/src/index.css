@@ -1799,3 +1799,46 @@ body {
 .theme-elegant_purple .preview-bullet {
   color: #212121;
 }
+.section-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e3e3e3;
+  border-radius: 14px;
+  background: white;
+}
+
+/* THE IMPORTANT FIX */
+.section-title-input {
+  flex: 1;
+  width: 100% !important;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* ICON BUTTONS */
+.section-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Mobile fix */
+@media (max-width: 600px) {
+  .section-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-actions {
+    justify-content: space-between;
+  }
+
+  .section-title-input {
+    width: 100% !important;
+    font-size: 18px;
+  }
+}
