@@ -61,7 +61,7 @@ class ExportRequest(BaseModel):
 
 # ============ ROUTES ============
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def read_root():
     return {"message": "🚀 AI Document Generator API is running!"}
 
