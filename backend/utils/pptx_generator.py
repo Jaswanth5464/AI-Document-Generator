@@ -235,7 +235,7 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
     
     # Add title
     left = Inches(1)
-    top = Inches(2.5)
+    top = Inches(2.3)   # moved slightly up
     width = Inches(8)
     height = Inches(1.5)
     
@@ -246,13 +246,13 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
     # Style title
     title_paragraph = title_frame.paragraphs[0]
     title_paragraph.alignment = PP_ALIGN.CENTER
-    title_paragraph.font.size = Pt(48)
+    title_paragraph.font.size = Pt(50)
     title_paragraph.font.bold = True
     title_paragraph.font.color.rgb = RGBColor(*theme_colors['title_color'])
     
     # Add subtitle
-    subtitle_top = top + height + Inches(0.3)
-    subtitle_box = slide.shapes.add_textbox(left, subtitle_top, width, Inches(0.8))
+    subtitle_top = top + height + Inches(0.25)
+    subtitle_box = slide.shapes.add_textbox(left, subtitle_top, width, Inches(0.7))
     subtitle_frame = subtitle_box.text_frame
     subtitle_frame.text = "AI-Generated Presentation"
     
@@ -263,45 +263,40 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
     
     # ========== CONTENT SLIDES ==========
     for i, section in enumerate(sections, 1):
-        # Use blank layout for full control
         content_slide_layout = prs.slide_layouts[6]
         slide = prs.slides.add_slide(content_slide_layout)
         
         # Apply gradient background
         apply_gradient_background(slide, theme_colors)
         
-        # Get icon for this slide
+        # Get icon
         icon = get_icon_for_title(section['title'])
         
-        # Add title with icon
+        # Add title
         title_left = Inches(0.5)
-        title_top = Inches(0.5)
+        title_top = Inches(0.3)      # improved spacing
         title_width = Inches(9)
-        title_height = Inches(1)
+        title_height = Inches(1.1)
         
         title_box = slide.shapes.add_textbox(title_left, title_top, title_width, title_height)
         title_frame = title_box.text_frame
         
-        # Add icon if available
-        if icon:
-            title_frame.text = f"{icon}  {section['title']}"
-        else:
-            title_frame.text = section['title']
+        title_frame.text = f"{icon}  {section['title']}" if icon else section['title']
         
         # Style title
         title_paragraph = title_frame.paragraphs[0]
-        title_paragraph.font.size = Pt(36)
+        title_paragraph.font.size = Pt(38)
         title_paragraph.font.bold = True
         title_paragraph.font.color.rgb = RGBColor(*theme_colors['title_color'])
         
-        # Add decorative line under title
+        # Decorative line under title
         try:
             line_shape = slide.shapes.add_shape(
                 1,  # Rectangle
                 Inches(0.5),
-                Inches(1.6),
+                Inches(1.25),  # brought closer
                 Inches(9),
-                Inches(0.05)
+                Inches(0.08)   # thicker
             )
             line_shape.fill.solid()
             line_shape.fill.fore_color.rgb = RGBColor(*theme_colors['accent_color'])
@@ -312,19 +307,16 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
         # Add content
         content = section.get('content', '')
         if content:
-            content_left = Inches(1)
-            content_top = Inches(2.2)
-            content_width = Inches(8)
-            content_height = Inches(4.5)
+            content_left = Inches(0.8)
+            content_top = Inches(1.7)     # moved higher
+            content_width = Inches(8.4)
+            content_height = Inches(5)
             
             content_box = slide.shapes.add_textbox(content_left, content_top, content_width, content_height)
             text_frame = content_box.text_frame
             text_frame.word_wrap = True
             
-            # Clean the content
             cleaned_content = clean_text_formatting(content)
-            
-            # Split into lines
             lines = [line.strip() for line in cleaned_content.split('\n') if line.strip()]
             
             for j, line in enumerate(lines):
@@ -333,22 +325,19 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
                 else:
                     p = text_frame.add_paragraph()
                 
-                # Add bullet point
                 p.text = line
                 p.level = 0
-                p.font.size = Pt(20)
+                p.font.size = Pt(22)  # larger + clean
                 p.font.color.rgb = RGBColor(*theme_colors['text_color'])
-                p.space_before = Pt(14)
-                p.space_after = Pt(14)
-                p.line_spacing = 1.3
-                
-                # Add bullet
+                p.space_before = Pt(6)   # reduced space
+                p.space_after = Pt(6)
+                p.line_spacing = 1.2
                 p.bullet = True
         
-        # Add decorative accent bar at bottom
+        # Accent bar bottom
         add_decorative_bar(slide, theme_colors)
         
-        # Add slide number
+        # Slide number
         try:
             slide_num_box = slide.shapes.add_textbox(
                 Inches(9),
@@ -358,6 +347,7 @@ def generate_pptx(topic: str, sections: list, theme: str = 'professional_blue') 
             )
             slide_num_frame = slide_num_box.text_frame
             slide_num_frame.text = str(i)
+            
             slide_num_para = slide_num_frame.paragraphs[0]
             slide_num_para.font.size = Pt(14)
             slide_num_para.font.color.rgb = RGBColor(*theme_colors['text_color'])
